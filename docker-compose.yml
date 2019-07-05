@@ -10,3 +10,4 @@ services:
       - PORT=8053
       - IP=67.230.169.165
       - FQDN=xip.jojolocklock.com
+      - FQDNS=9o2.xyz xip.corp.coding.io

@@ -43,30 +43,47 @@ import (
 	"os"
 	"os/signal"
 	"regexp"
+	"strings"
 	"syscall"
 
 	"github.com/miekg/dns"
 )
 
 var (
-	verbose = flag.Bool("v", false, "Verbose")
-	fqdn    = flag.String("fqdn", "xip.name.", "FQDN to handle")
-	addr    = flag.String("addr", ":53", "The addr to bind on")
-	ip      = flag.String("ip", "188.166.43.179", "The IP of xip.name")
-
+	verbose   = flag.Bool("v", false, "Verbose")
+	fqdn      = flag.String("fqdn", "xip.name.", "FQDN to handle")
+	addr      = flag.String("addr", ":53", "The addr to bind on")
+	ip        = flag.String("ip", "188.166.43.179", "The IP of xip.name")
+	fqdns     = flag.String("fqdns", "xip.jojolocklock.com xip.corp.coding.io 9o2.xyz", "FQDNS to handle")
+	accept    []string
 	ipPattern = regexp.MustCompile(`(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})`)
 	defaultIP net.IP
 )
+
+func initAccept() {
+	if len(*fqdn) != 0 {
+		accept = append(accept, dns.Fqdn(*fqdn)) // Ensure that a FQDN is passed in (often the trailing . is omitted)
+	}
+	if len(*fqdns) != 0 {
+		splits := strings.Split(*fqdns, " ")
+		for _, v := range splits {
+			if len(v) != 0 {
+				accept = append(accept, dns.Fqdn(v))
+			}
+		}
+	}
+}
 
 func main() {
 	flag.Parse()
 
 	defaultIP = net.ParseIP(*ip).To4()
 
-	// Ensure that a FQDN is passed in (often the trailing . is omitted)
-	*fqdn = dns.Fqdn(*fqdn)
+	initAccept()
 
-	dns.HandleFunc(*fqdn, handleDNS)
+	for _, v := range accept {
+		dns.HandleFunc(v, handleDNS)
+	}
 
 	go serve(*addr, "tcp")
 	go serve(*addr, "udp")
@@ -78,6 +95,12 @@ func main() {
 }
 
 func handleDNS(w dns.ResponseWriter, r *dns.Msg) {
+	questions := r.Question
+	for _, v := range questions {
+		fmt.Printf("receive %v", v.Name)
+	}
+	fmt.Printf("receive done")
+
 	m := &dns.Msg{}
 	m.SetReply(r)
 
