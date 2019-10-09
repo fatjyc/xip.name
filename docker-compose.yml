@@ -8,6 +8,6 @@ services:
       - "53:8053/tcp"
     environment:
       - PORT=8053
-      - IP=67.230.169.165
+      - IP=172.247.127.157
       - FQDN=xip.jojolocklock.com
-      - FQDNS=9o2.xyz xip.corp.coding.io
+      - FQDNS=t.wusisu.fun 9o2.xyz 
