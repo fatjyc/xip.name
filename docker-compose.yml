@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  xip:
+    build: .
+    ports:
+      - "53:8053/udp"
+      - "53:8053/tcp"
+    environment:
+      - PORT=8053
+      - IP=172.247.127.157
+      - FQDN=xip.jojolocklock.com
+      - FQDNS=t.wusisu.fun 9o2.xyz 

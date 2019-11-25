@@ -18,7 +18,7 @@ deploy: linux init web
 	ssh root@188.166.43.179 'service xip.name start'
 
 run:
-	go run xip.go -p 8053 -v
+	go run xip.go --addr :8053 -v
 
 dig:
 	dig @localhost -p 8053 foo.bar.10.1.2.3.xip.name A
